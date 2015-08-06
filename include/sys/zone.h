@@ -1,4 +1,5 @@
 /*****************************************************************************\
+ *  Copyright 2015 OmniTI Computer Consulting, Inc. All rights reserved.
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2007 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,11 +27,35 @@
 #define _SPL_ZONE_H
 
 #include <sys/byteorder.h>
+#include <sys/list.h>
+#include <sys/types.h>
 
 #define	GLOBAL_ZONEID			0
 
-#define	zone_dataset_visible(x, y)	(1)
-#define	crgetzoneid(x)			(GLOBAL_ZONEID)
-#define	INGLOBALZONE(z)			(1)
+#define	INGLOBALZONE(z)			(crgetzoneid(z) == GLOBAL_ZONEID)
+
+struct dataset_namespace;
+
+typedef unsigned long zoneid_t;
+
+typedef struct spl_zone {
+	zoneid_t    zone_id;
+	list_node_t zone_list;
+	struct dataset_namespace   *zone_namespace;
+	list_t	    zone_datasets;
+} zone_t;
+
+typedef struct zone_dataset {
+	char	    *zd_dataset;
+	list_node_t zd_linkage;
+} zone_dataset_t;
+
+extern zone_t * crgetzone(struct task_struct *task);
+extern zoneid_t crgetzoneid(struct task_struct *task);
+
+extern int zone_dataset_visible(const char *dataset, int *writable);
+
+int spl_zone_init(void);
+void spl_zone_fini(void);
 
 #endif /* SPL_ZONE_H */

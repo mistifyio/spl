@@ -30,7 +30,6 @@
 #include <linux/cpumask.h>
 #include <sys/debug.h>
 #include <sys/varargs.h>
-#include <sys/zone.h>
 #include <sys/signal.h>
 
 #ifdef HAVE_SCHED_RT_HEADER
